@@ -3,7 +3,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./config.js";
 export const supabase=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 const fail=e=>{if(e) throw e};
 export const girisYap=(email,password)=>supabase.auth.signInWithPassword({email,password});
-export const kayitOl=(email,password,fullName,role)=>supabase.auth.signUp({email,password,options:{data:{full_name:fullName,role}}});
+export const kayitOl=async(email,password,fullName,role)=>{try{const r=await supabase.auth.signUp({email,password,options:{data:{full_name:fullName,role},emailRedirectTo:"https://tetliemir01.github.io/rota360-akademi"}});if(r.error)return{data:null,error:{message:`SUPABASE: ${r.error.message}`}};return r}catch(e){return{data:null,error:{message:`FETCH: ${e.name} / ${e.message}`}}}};
 export const cikisYap=()=>supabase.auth.signOut();
 export const mevcutKullanici=()=>supabase.auth.getUser();
 export const profilGetir=async()=>{const {data,error}=await supabase.from('profiles').select('*').eq('id',(await supabase.auth.getUser()).data.user.id).single();fail(error);return data};
